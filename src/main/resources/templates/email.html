@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="color-scheme" content="light" />
+    <meta name="supported-color-schemes" content="light" />
+    <title>Código de verificación</title>
+
+    <!--[if mso]>
+    <noscript><xml><o:OfficeDocumentSettings>
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+    </o:OfficeDocumentSettings></xml></noscript>
+    <![endif]-->
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Syne:wght@700&family=JetBrains+Mono:wght@600&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: #ffffff;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #1E2D4E;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+
+        .wrapper {
+            background: #ffffff;
+            padding: 48px 20px 56px;
+        }
+
+        .container {
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 36px;
+            border-bottom: 1px solid #E2F1F4;
+            margin-bottom: 44px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .logo-text {
+            font-family: 'Syne', sans-serif;
+            font-size: 17px;
+            font-weight: 700;
+            color: #1E2D4E;
+            letter-spacing: -0.2px;
+        }
+
+        .topbar-tag {
+            font-size: 11px;
+            font-weight: 500;
+            color: #1A8FA0;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+        }
+
+        .intro-line {
+            font-size: 13px;
+            color: #5B8898;
+            margin-bottom: 8px;
+            font-weight: 400;
+        }
+
+        .headline {
+            font-family: 'Syne', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: #1E2D4E;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
+            margin-bottom: 20px;
+        }
+
+        .body-copy {
+            font-size: 14px;
+            color: #2E5068;
+            line-height: 1.75;
+            margin-bottom: 40px;
+            max-width: 400px;
+        }
+
+        .otp-section {
+            border-top: 1px solid #E2F1F4;
+            padding-top: 32px;
+            margin-bottom: 32px;
+        }
+
+        .otp-eyebrow {
+            font-size: 11px;
+            color: #1A8FA0;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+
+        .otp-row {
+            display: flex;
+            align-items: baseline;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .otp-number {
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 52px;
+            font-weight: 600;
+            color: #1E2D4E;
+            letter-spacing: 6px;
+            line-height: 1;
+        }
+
+        .otp-meta {
+            font-size: 12px;
+            color: #5B8898;
+            line-height: 1.6;
+        }
+
+        .otp-meta strong {
+            color: #1A8FA0;
+            font-weight: 500;
+        }
+
+        .cut-line {
+            border: none;
+            border-top: 1px dashed #C8E8ED;
+            margin: 32px 0;
+        }
+
+        .security-note {
+            font-size: 13px;
+            color: #5B8898;
+            line-height: 1.65;
+        }
+
+        .security-note a {
+            color: #1A8FA0;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(26,143,160,0.3);
+        }
+
+        .footer {
+            border-top: 1px solid #E2F1F4;
+            margin-top: 48px;
+            padding-top: 24px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .footer-copy {
+            font-size: 11px;
+            color: #5B8898;
+            line-height: 1.7;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 16px;
+        }
+
+        .footer-link {
+            font-size: 11px;
+            color: #5B8898;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+        }
+
+        .footer-link:hover {
+            border-color: #5B8898;
+        }
+
+        @media only screen and (max-width: 480px) {
+            .wrapper { padding: 32px 16px 40px; }
+            .otp-number { font-size: 40px; letter-spacing: 4px; }
+            .headline { font-size: 22px; }
+            .footer { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <div class="container">
+
+        <!-- Topbar -->
+        <div class="topbar">
+            <span class="logo-text" th:text="${brand_name}">Tu Empresa</span>
+        </div>
+
+        <!-- Saludo -->
+        <p class="intro-line">Hola, <span th:text="${nombre}">usuario</span></p>
+
+        <!-- Código como protagonista -->
+        <span class="otp-number" th:text="${codigo}">000000</span>
+        <p class="otp-meta">
+            Válido por <strong><span th:text="${minutos}">1</span> min</strong> · Uso único
+        </p>
+
+        <!-- Copy secundario -->
+        <p class="body-copy">
+            Úsalo para iniciar sesión en ACJ Signature.
+            Si no lo solicitaste, puedes ignorar este mensaje — tu cuenta no se ve afectada.
+        </p>
+
+        <hr class="cut-line" />
+
+        <!-- Nota de seguridad -->
+        <p class="security-note">
+            ¿Tienes dudas o crees que alguien más intentó acceder?
+            <a th:href="${url_ayuda}">Escríbenos</a> y te ayudamos.
+        </p>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p class="footer-copy">
+                © <span th:text="${anio}">2026</span>
+                <span th:text="${brand_name}">ACJ Signature</span><br>
+                Enviado a <span th:text="${email}">correo@ejemplo.com</span>
+            </p>
+            <div class="footer-links">
+                <a th:href="${url_privacidad}" class="footer-link">Privacidad</a>
+                <a th:href="${url_terminos}" class="footer-link">Términos</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>
+
