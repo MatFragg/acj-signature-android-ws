@@ -69,11 +69,11 @@ public class AuthServiceImpl implements AuthService {
             );
 
             User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UnauthorizedException("Credenciales invalidas"));
+                .orElseThrow(() -> new UnauthorizedException(MessageConstants.INVALID_CREDENTIALS));
 
             if (!user.getEmailVerified()) {
                 log.warn("Login attempt for unverified email: {}", request.getEmail());
-                throw new UnauthorizedException("Credenciales invalidas");
+                throw new UnauthorizedException(MessageConstants.INVALID_CREDENTIALS);
             }
 
             String token = jwtTokenProvider.generateToken(authentication);
@@ -89,7 +89,7 @@ public class AuthServiceImpl implements AuthService {
 
         } catch (org.springframework.security.core.AuthenticationException ex) {
             log.warn("Login failed for user: {}", request.getEmail());
-            throw new UnauthorizedException("Credenciales invalidas");
+            throw new UnauthorizedException(MessageConstants.INVALID_CREDENTIALS);
         }
     }
 

@@ -1,6 +1,6 @@
 ---
 title: "Backend API RESTful con Spring Boot y PostgreSQL - Arquitectura en Capas" 
-date: 2025-11-06 
+date: 2026-06-04 
 tags:
   - project-structure
   - architecture
@@ -10,16 +10,15 @@ tags:
   - layered-architecture 
 stack:
   - Java 21+
-  - Spring Boot 3.5
+  - Spring Boot 4.0.6
   - Spring Web
   - Spring Data JPA
   - Spring Security
   - Lombok
   - PostgreSQL 16
-  - Maven/Gradle
+  - Maven
   - Hibernate
-  - Flyway/Liquibase
-  - MapStruct 
+  - OpenAPI/Swagger
 principles:
   - "[[Layered Architecture]]"
   - "[[Separation of Concerns]]"
@@ -36,88 +35,88 @@ Esta estructura se basa en **[[Layered Architecture]]** (Arquitectura en Capas),
 - **Pragmatic Simplicity:** No introduce complejidad innecesaria. Ideal para aplicaciones CRUD y APIs empresariales típicas.
 - **Convention over Configuration:** Aprovecha las convenciones de Spring Boot para reducir configuración manual.
 - **Testability:** Cada capa puede ser probada de forma independiente mediante interfaces y mocks.
----
-## 2. Folder Structure Tree
+
+## 2. API Audit Remediation
+
+Esta API ha sido auditada y remedida para mejorar la calidad, seguridad y mantenibilidad. Las principales mejoras incluyen:
+
+### Seguridad
+- **BCrypt OTP Hashing:** Los códigos OTP ya no se almacenan en texto plano; se usan hashes BCrypt.
+- **Rate Limiting:** Implementación de Bucket4j para limitar intentos de autenticación por IP.
+- **Harden Enumeración:** Login y forgot-password no revelan si un email existe.
+- **Validation Unificada:** Bean validation en todos los DTOs con mensajes en español centralizados.
+
+### Infraestructura
+- **PostgreSQL 16:** Migración exitosa desde MySQL.
+- **JPA Auditing:** `@CreatedBy` y `@LastModifiedBy` desde el contexto de seguridad.
+- **Configuración Typed:** `AppProperties` para tipos seguros de configuración.
+
+### Documentación
+- **OpenAPI 3.0:** Metadata real y anotaciones por endpoint.
+- **Errores Estandardizados:** `ErrorResponse` y `ErrorCode` para respuestas consistentes.
+
+## 3. Folder Structure Tree
 
 ```text
-com.empresa.proyecto/
+com.acj.acjsignature.mobile.androidws/
 │
 ├── 📁 controller/              # Capa de Presentación (REST API)
-│   ├── 📄 ClienteController.java
-│   ├── 📄 ProductoController.java
-│   ├── 📄 PedidoController.java
-│   └── 📄 GlobalExceptionHandler.java
+│   ├── 📄 AuthController.java
+│   └── 📄 DniController.java
 │
 ├── 📁 service/                 # Capa de Lógica de Negocio
 │   ├── 📁 impl/
-│   │   ├── 📄 ClienteServiceImpl.java
-│   │   ├── 📄 ProductoServiceImpl.java
-│   │   └── 📄 PedidoServiceImpl.java
-│   ├── 📄 ClienteService.java
-│   ├── 📄 ProductoService.java
-│   └── 📄 PedidoService.java
+│   │   ├── 📄 AuthServiceImpl.java
+│   │   ├── 📄 OtpServiceImpl.java
+│   │   ├── 📄 DniServiceImpl.java
+│   │   └── ...
+│   ├── 📄 AuthService.java
+│   ├── 📄 OtpService.java
+│   ├── 📄 DniService.java
+│   └── ...
 │
 ├── 📁 repository/              # Capa de Acceso a Datos
-│   ├── 📄 ClienteRepository.java
-│   ├── 📄 ProductoRepository.java
-│   └── 📄 PedidoRepository.java
+│   ├── 📄 UserRepository.java
+│   └── 📄 RoleRepository.java
 │
 ├── 📁 model/                   # Entidades de Dominio (JPA Entities)
-│   ├── 📄 Cliente.java
-│   ├── 📄 Producto.java
-│   ├── 📄 Pedido.java
-│   └── 📄 ItemPedido.java
+│   ├── 📄 User.java
+│   ├── 📄 Role.java
+│   └── 📄 RoleEnum.java
 │
 ├── 📁 dto/                     # Data Transfer Objects
 │   ├── 📁 request/
-│   │   ├── 📄 ClienteRequest.java
-│   │   ├── 📄 ProductoRequest.java
-│   │   └── 📄 PedidoRequest.java
+│   │   ├── 📄 LoginRequest.java
+│   │   ├── 📄 RegisterRequest.java
+│   │   └── ...
 │   └── 📁 response/
-│       ├── 📄 ClienteResponse.java
-│       ├── 📄 ProductoResponse.java
-│       ├── 📄 PedidoResponse.java
-│       └── 📄 ApiResponse.java
-│
-├── 📁 mapper/                  # Conversión entre DTOs y Entities
-│   ├── 📄 ClienteMapper.java
-│   ├── 📄 ProductoMapper.java
-│   └── 📄 PedidoMapper.java
+│       ├── 📄 AuthResponse.java
+│       ├── 📄 OtpResponse.java
+│       └── ...
 │
 ├── 📁 config/                  # Configuraciones de Spring
 │   ├── 📄 SecurityConfig.java
-│   ├── 📄 CorsConfig.java
 │   ├── 📄 OpenApiConfig.java
-│   └── 📄 JpaConfig.java
+│   ├── 📄 JpaAuditingConfig.java
+│   ├── 📄 HttpClientConfig.java
+│   └── 📄 AppProperties.java
 │
 ├── 📁 exception/               # Manejo de Excepciones
-│   ├── 📄 ResourceNotFoundException.java
-│   ├── 📄 BadRequestException.java
+│   ├── 📄 ErrorCode.java
 │   ├── 📄 BusinessException.java
-│   └── 📄 ErrorResponse.java
+│   ├── 📄 UnauthorizedException.java
+│   └── 📄 GlobalExceptionHandler.java
 │
 ├── 📁 security/                # Seguridad y Autenticación
-│   ├── 📄 JwtAuthenticationFilter.java
 │   ├── 📄 JwtTokenProvider.java
-│   ├── 📄 UserDetailsServiceImpl.java
-│   └── 📄 SecurityUtils.java
+│   └── ...
 │
 ├── 📁 util/                    # Utilidades y Helpers
-│   ├── 📄 DateUtils.java
-│   ├── 📄 ValidationUtils.java
-│   └── 📄 Constants.java
+│   ├── 📄 Constants.java
+│   ├── 📄 MessageConstants.java
+│   └── ...
 │
-└── 📄 Application.java         # Punto de entrada de la aplicación
-
-resources/
-├── 📄 application.yml          # Configuración principal
-├── 📄 application-dev.yml      # Perfil de desarrollo
-├── 📄 application-prod.yml     # Perfil de producción
-└── 📁 db/
-    └── 📁 migration/           # Scripts de Flyway/Liquibase
-        ├── 📄 V1__create_clientes.sql
-        ├── 📄 V2__create_productos.sql
-        └── 📄 V3__create_pedidos.sql
+└── 📄 AndroidWsApplication.java  # Punto de entrada de la aplicación
 ```
 
 ## 3. Directory Breakdown
@@ -135,49 +134,36 @@ Responsable de manejar las peticiones HTTP y devolver respuestas. Esta capa no c
 - Manejar códigos de estado HTTP apropiados
 - **NO realizar conversiones entre entidades y DTOs (lo hace el servicio)**
 
-**Ejemplo de Controller:**
+**Ejemplo de Controller (AuthController):**
 ```java
 @RestController
-@RequestMapping("/api/v1/clientes")
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 @Validated
-public class ClienteController {
+public class AuthController {
     
-    private final ClienteService clienteService;
+    private final AuthService authService;
     
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<ClienteResponse>>> getAllClientes() {
-        List<ClienteResponse> clientes = clienteService.findAll();
-        return ResponseEntity.ok(ApiResponse.success(clientes));
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<AuthResponse>> login(
+            @Valid @RequestBody LoginRequest request) {
+        AuthResponse response = authService.login(request);
+        return ResponseEntity.ok(ApiResponse.success("Login exitoso", response));
     }
     
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<ClienteResponse>> getClienteById(@PathVariable Long id) {
-        ClienteResponse cliente = clienteService.findById(id);
-        return ResponseEntity.ok(ApiResponse.success(cliente));
+    @PostMapping("/register")
+    public ResponseEntity<ApiResponse<OtpResponse>> register(
+            @Valid @RequestBody RegisterRequest request) {
+        OtpResponse response = authService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(ApiResponse.success("Usuario registrado. Verifica tu email.", response));
     }
     
-    @PostMapping
-    public ResponseEntity<ApiResponse<ClienteResponse>> createCliente(
-            @Valid @RequestBody ClienteRequest request) {
-        ClienteResponse saved = clienteService.save(request);
-        return ResponseEntity
-            .status(HttpStatus.CREATED)
-            .body(ApiResponse.success("Cliente creado exitosamente", saved));
-    }
-    
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<ClienteResponse>> updateCliente(
-            @PathVariable Long id,
-            @Valid @RequestBody ClienteRequest request) {
-        ClienteResponse updated = clienteService.update(id, request);
-        return ResponseEntity.ok(ApiResponse.success("Cliente actualizado exitosamente", updated));
-    }
-    
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteCliente(@PathVariable Long id) {
-        clienteService.delete(id);
-        return ResponseEntity.ok(ApiResponse.success("Cliente eliminado exitosamente", null));
+    @PostMapping("/verify-otp")
+    public ResponseEntity<ApiResponse<AuthResponse>> verifyOtp(
+            @Valid @RequestBody VerifyOtpRequest request) {
+        AuthResponse response = authService.verifyOtp(request);
+        return ResponseEntity.ok(ApiResponse.success("Email verificado exitosamente", response));
     }
 }
 ```
@@ -189,30 +175,35 @@ public class ClienteController {
 @Slf4j
 public class GlobalExceptionHandler {
     
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleResourceNotFound(
-            ResourceNotFoundException ex) {
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException ex) {
         ErrorResponse error = ErrorResponse.builder()
-            .status(HttpStatus.NOT_FOUND.value())
+            .code(ex.getErrorCode().getCode())
+            .status(ex.getErrorCode().getStatus())
+            .error(HttpStatus.valueOf(ex.getErrorCode().getStatus()).getReasonPhrase())
             .message(ex.getMessage())
             .timestamp(LocalDateTime.now())
+            .path(extractPath(request))
             .build();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        return ResponseEntity.status(ex.getErrorCode().getStatus()).body(error);
     }
     
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationExceptions(
-            MethodArgumentNotValidException ex) {
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolation(ConstraintViolationException ex) {
         Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(error -> 
-            errors.put(error.getField(), error.getDefaultMessage())
-        );
+        for (ConstraintViolation<?> violation : ex.getConstraintViolations()) {
+            String field = violation.getPropertyPath().toString();
+            errors.put(field, violation.getMessage());
+        }
         
         ErrorResponse error = ErrorResponse.builder()
+            .code(ErrorCode.VALIDATION_ERROR.getCode())
             .status(HttpStatus.BAD_REQUEST.value())
-            .message("Validation failed")
-            .errors(errors)
+            .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+            .message(ErrorCode.VALIDATION_ERROR.getDefaultMessage())
+            .validationErrors(errors)
             .timestamp(LocalDateTime.now())
+            .path(extractPath(request))
             .build();
         return ResponseEntity.badRequest().body(error);
     }
@@ -221,13 +212,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleGeneralException(Exception ex) {
         log.error("Unexpected error", ex);
         ErrorResponse error = ErrorResponse.builder()
+            .code(ErrorCode.INTERNAL_ERROR.getCode())
             .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+            .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
             .message("An unexpected error occurred")
             .timestamp(LocalDateTime.now())
+            .path(extractPath(request))
             .build();
-        return ResponseEntity
-            .status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(error);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 }
 ```
@@ -243,21 +235,22 @@ Contiene toda la lógica de negocio de la aplicación. Es el corazón del sistem
 - Realizar validaciones complejas
 - Manejar transacciones
 - **Recibir DTOs de Request y retornar DTOs de Response**
-- **Usar Mappers para convertir entre DTOs y Entidades**
+- **NO usar Mappers (los DTOs se construyen directamente en el servicio)**
 - Mantener la separación entre la capa de presentación y la capa de persistencia
 
 **Patrón Interface + Implementation:**
 
 ```java
 // Interface
-public interface ClienteService {
-    List<ClienteResponse> findAll();
-    ClienteResponse findById(Long id);
-    ClienteResponse save(ClienteRequest request);
-    ClienteResponse update(Long id, ClienteRequest request);
-    void delete(Long id);
-    boolean existsByEmail(String email);
-    List<ClienteResponse> findByIngresoMinimo(BigDecimal ingresoMinimo);
+public interface AuthService {
+    AuthResponse login(LoginRequest request);
+    OtpResponse register(RegisterRequest request);
+    AuthResponse verifyOtp(VerifyOtpRequest request);
+    OtpResponse resendOtp(ResendOtpRequest request);
+    OtpResponse forgotPassword(ForgotPasswordRequest request);
+    ApiResponse<String> resetPassword(ResetPasswordRequest request);
+    ApiResponse<String> changePassword(ChangePasswordRequest request);
+    ApiResponse<String> verifyOtpOnly(VerifyOtpRequest request);
 }
 
 // Implementation
@@ -265,94 +258,68 @@ public interface ClienteService {
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
-public class ClienteServiceImpl implements ClienteService {
+public class AuthServiceImpl implements AuthService {
     
-    private final ClienteRepository clienteRepository;
-    private final ClienteMapper clienteMapper;
-    
-    @Override
-    @Transactional(readOnly = true)
-    public List<ClienteResponse> findAll() {
-        log.debug("Fetching all clients");
-        List<Cliente> clientes = clienteRepository.findAll();
-        return clienteMapper.toResponseList(clientes);
-    }
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final OtpService otpService;
+    private final AppProperties appProperties;
     
     @Override
-    @Transactional(readOnly = true)
-    public ClienteResponse findById(Long id) {
-        Cliente cliente = clienteRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException(
-                "Cliente not found with id: " + id));
-        return clienteMapper.toResponse(cliente);
-    }
-    
-    @Override
-    public ClienteResponse save(ClienteRequest request) {
-        // Validación de negocio
-        if (existsByEmail(request.getEmail())) {
-            throw new BusinessException("Email already exists");
+    public AuthResponse login(LoginRequest request) {
+        Authentication authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
+        
+        User user = userRepository.findByEmail(request.getEmail())
+            .orElseThrow(() -> new UnauthorizedException(MessageConstants.INVALID_CREDENTIALS));
+        
+        if (!user.getEmailVerified()) {
+            throw new UnauthorizedException(MessageConstants.INVALID_CREDENTIALS);
         }
         
-        // Lógica de negocio adicional
-        if (request.getIngresoMensual() != null && 
-            request.getIngresoMensual().compareTo(BigDecimal.ZERO) < 0) {
-            throw new BusinessException("Income cannot be negative");
+        String token = jwtTokenProvider.generateToken(authentication);
+        
+        return AuthResponse.builder()
+            .token(token)
+            .tokenType("Bearer")
+            .expiresIn(appProperties.getJwt().getExpiration() / 1000)
+            .user(UserMapper.toUserInfo(user))
+            .build();
+    }
+    
+    @Override
+    public OtpResponse register(RegisterRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new BusinessException(ErrorCode.USER_ALREADY_EXISTS, "El email ya esta registrado");
         }
         
-        // Convertir DTO a entidad
-        Cliente cliente = clienteMapper.toEntity(request);
-        
-        log.info("Creating new client: {}", cliente.getNombreCompleto());
-        Cliente saved = clienteRepository.save(cliente);
-        
-        // Convertir entidad a DTO para retornar
-        return clienteMapper.toResponse(saved);
-    }
-    
-    @Override
-    public ClienteResponse update(Long id, ClienteRequest request) {
-        Cliente existing = clienteRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException(
-                "Cliente not found with id: " + id));
-        
-        // Validar que el email no esté en uso por otro cliente
-        if (!existing.getEmail().equals(request.getEmail()) && 
-            existsByEmail(request.getEmail())) {
-            throw new BusinessException("Email already exists");
+        if (userRepository.existsByDni(request.getDni())) {
+            throw new BusinessException(ErrorCode.DNI_ALREADY_EXISTS, "El DNI ya esta registrado");
         }
         
-        // Actualizar campos usando el mapper
-        clienteMapper.updateEntityFromRequest(request, existing);
+        Role userRole = roleRepository.findByName(RoleEnum.ROLE_USER)
+            .orElseThrow(() -> new BusinessException(ErrorCode.ROLE_NOT_FOUND,
+                "Rol ROLE_USER no encontrado en la base de datos"));
         
-        log.info("Updating client with id: {}", id);
-        Cliente updated = clienteRepository.save(existing);
+        User user = User.builder()
+            .email(request.getEmail())
+            .password(passwordEncoder.encode(request.getPassword()))
+            .dni(request.getDni())
+            .firstName(request.getFirstName())
+            .lastName(request.getLastName())
+            .active(true)
+            .emailVerified(false)
+            .roles(Collections.singleton(userRole))
+            .build();
         
-        // Retornar DTO
-        return clienteMapper.toResponse(updated);
-    }
-    
-    @Override
-    public void delete(Long id) {
-        if (!clienteRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Cliente not found with id: " + id);
-        }
+        User savedUser = userRepository.save(user);
         
-        log.info("Deleting client with id: {}", id);
-        clienteRepository.deleteById(id);
-    }
-    
-    @Override
-    @Transactional(readOnly = true)
-    public boolean existsByEmail(String email) {
-        return clienteRepository.existsByEmail(email);
-    }
-    
-    @Override
-    @Transactional(readOnly = true)
-    public List<ClienteResponse> findByIngresoMinimo(BigDecimal ingresoMinimo) {
-        List<Cliente> clientes = clienteRepository.findByIngresoMensualGreaterThanEqual(ingresoMinimo);
-        return clienteMapper.toResponseList(clientes);
+        return otpService.generateAndSendOtp(savedUser, 
+            "Se ha enviado un código OTP a tu correo electrónico. Verifica tu email.");
     }
 }
 ```

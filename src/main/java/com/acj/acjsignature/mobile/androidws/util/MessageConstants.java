@@ -40,4 +40,12 @@ public final class MessageConstants {
 
     // New password
     public static final String NEW_PASSWORD_MIN_LENGTH = "La nueva contrasena debe tener al menos 6 caracteres";
+
+    // Auth
+    public static final String INVALID_CREDENTIALS = "Credenciales invalidas";
+
+    // RENIEC
+    public static final String RENIEC_NOT_CONFIGURED_TOKEN = "Servicio de RENIEC no disponible: token no configurado";
+    public static final String RENIEC_INVALID_DNI = "Numero de DNI invalido";
+    public static final String RENIEC_GENERIC_ERROR = "Error al consultar RENIEC: ";
 }

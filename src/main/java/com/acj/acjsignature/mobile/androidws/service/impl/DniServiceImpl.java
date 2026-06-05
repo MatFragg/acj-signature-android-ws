@@ -34,7 +34,7 @@ public class DniServiceImpl implements DniService {
         if (token == null || token.isBlank()) {
             log.error("Token de RENIEC no configurado");
             throw new BusinessException(ErrorCode.RENIEC_NOT_CONFIGURED,
-                "Servicio de RENIEC no disponible: token no configurado");
+                MessageConstants.RENIEC_NOT_CONFIGURED_TOKEN);
         }
 
         try {
@@ -58,7 +58,7 @@ public class DniServiceImpl implements DniService {
 
         } catch (HttpClientErrorException.BadRequest ex) {
             log.warn("Solicitud invalida a RENIEC para DNI: {}", numero);
-            throw new BusinessException(ErrorCode.RENIEC_BAD_REQUEST, "Numero de DNI invalido");
+            throw new BusinessException(ErrorCode.RENIEC_BAD_REQUEST, MessageConstants.RENIEC_INVALID_DNI);
 
         } catch (HttpClientErrorException.NotFound ex) {
             log.warn("DNI no encontrado en RENIEC: {}", numero);
@@ -73,7 +73,7 @@ public class DniServiceImpl implements DniService {
         } catch (HttpClientErrorException ex) {
             log.error("Error en solicitud a RENIEC: {} {}", ex.getStatusCode(), ex.getMessage());
             throw new BusinessException(ErrorCode.RENIEC_ERROR,
-                "Error al consultar RENIEC: " + ex.getStatusCode());
+                MessageConstants.RENIEC_GENERIC_ERROR + ex.getStatusCode());
 
         } catch (Exception ex) {
             log.error("Error inesperado al consultar RENIEC para DNI: {}", numero, ex);
