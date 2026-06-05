@@ -1,42 +1,44 @@
 package com.acj.acjsignature.mobile.androidws.dto.request;
 
-import jakarta.validation.constraints.*;
+import com.acj.acjsignature.mobile.androidws.util.Constants;
+import com.acj.acjsignature.mobile.androidws.util.MessageConstants;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO para solicitud de registro de usuario.
- * Incluye validación de DNI (8 dígitos), email, contraseña fuerte, etc.
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class RegisterRequest {
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email should be valid")
+
+    @NotBlank(message = MessageConstants.EMAIL_REQUIRED)
+    @Email(message = MessageConstants.EMAIL_INVALID)
+    @Size(max = Constants.EMAIL_MAX_LENGTH, message = "El email no puede exceder 100 caracteres")
     private String email;
 
-    @NotBlank(message = "Password is required")
-    @Size(min = 6, max = 255, message = "Password must be between 6 and 255 characters")
-    @Pattern(
-        regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$",
-        message = "Password must contain at least one uppercase letter, one lowercase letter, and one digit"
-    )
+    @NotBlank(message = MessageConstants.PASSWORD_REQUIRED)
+    @Size(min = 6, max = Constants.PASSWORD_MAX_LENGTH,
+          message = "La contrasena debe tener entre 6 y 255 caracteres")
+    @Pattern(regexp = Constants.PASSWORD_PATTERN, message = MessageConstants.PASSWORD_PATTERN_MESSAGE)
     private String password;
 
-    @NotBlank(message = "DNI is required")
-    @Pattern(regexp = "^\\d{8}$", message = "DNI must be exactly 8 digits")
+    @NotBlank(message = MessageConstants.DNI_REQUIRED)
+    @Pattern(regexp = Constants.DNI_PATTERN, message = MessageConstants.DNI_PATTERN)
     private String dni;
 
-    @NotBlank(message = "First name is required")
-    @Size(min = 2, max = 100, message = "First name must be between 2 and 100 characters")
+    @NotBlank(message = MessageConstants.FIRST_NAME_REQUIRED)
+    @Size(min = Constants.NAME_MIN_LENGTH, max = Constants.NAME_MAX_LENGTH,
+          message = MessageConstants.FIRST_NAME_SIZE)
     private String firstName;
 
-    @NotBlank(message = "Last name is required")
-    @Size(min = 2, max = 100, message = "Last name must be between 2 and 100 characters")
+    @NotBlank(message = MessageConstants.LAST_NAME_REQUIRED)
+    @Size(min = Constants.NAME_MIN_LENGTH, max = Constants.NAME_MAX_LENGTH,
+          message = MessageConstants.LAST_NAME_SIZE)
     private String lastName;
 }
-

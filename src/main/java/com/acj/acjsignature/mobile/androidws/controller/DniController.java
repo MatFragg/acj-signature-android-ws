@@ -4,6 +4,7 @@ import com.acj.acjsignature.mobile.androidws.dto.request.DniRequest;
 import com.acj.acjsignature.mobile.androidws.dto.response.ApiResponse;
 import com.acj.acjsignature.mobile.androidws.dto.response.DniResponse;
 import com.acj.acjsignature.mobile.androidws.service.DniService;
+import com.acj.acjsignature.mobile.androidws.util.Constants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,37 +12,32 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
  * Controlador para consulta de datos de DNI.
- * Endpoint público (sin autenticación) para autocompletar
+ * Endpoint publico (sin autenticacion) para autocompletar
  * datos personales durante el registro de usuarios.
  */
 @RestController
 @RequestMapping("/api/v1/public/dni")
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "DNI", description = "Endpoints para consulta de datos de DNI (sin autenticación)")
+@Validated
+@Tag(name = "DNI", description = "Endpoints para consulta de datos de DNI (sin autenticacion)")
 public class DniController {
 
     private final DniService dniService;
 
-    /**
-     * Consulta datos personales por número de DNI.
-     * Este endpoint está disponible sin autenticación para permitir
-     * que el frontend autocomplete campos durante el registro.
-     *
-     * @param dniRequest DTO con número de DNI (8 dígitos)
-     * @return Datos personales: nombres, apellidos y nombre completo
-     */
     @PostMapping("/consultar")
     @Operation(summary = "Consultar datos de DNI",
-        description = "Obtiene información personal de RENIEC usando el número de DNI. " +
-                      "Endpoint público sin autenticación para autocompletar datos en registro.",
+        description = "Obtiene informacion personal de RENIEC usando el numero de DNI. " +
+                      "Endpoint publico sin autenticacion para autocompletar datos en registro.",
         tags = {"DNI"})
     @ApiResponses(value = {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -52,7 +48,7 @@ public class DniController {
         ),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
             responseCode = "400",
-            description = "DNI inválido (formato incorrecto)",
+            description = "DNI invalido (formato incorrecto)",
             content = @Content(mediaType = "application/json")
         ),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -77,15 +73,9 @@ public class DniController {
         );
     }
 
-    /**
-     * Alternativa GET para consultar DNI directamente por parámetro.
-     *
-     * @param numero Número de DNI (8 dígitos)
-     * @return Datos personales
-     */
     @GetMapping
     @Operation(summary = "Consultar datos de DNI (GET)",
-        description = "Alternativa GET para consultar DNI usando parámetro query",
+        description = "Alternativa GET para consultar DNI usando parametro query",
         tags = {"DNI"})
     @ApiResponses(value = {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -94,25 +84,15 @@ public class DniController {
         ),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
             responseCode = "400",
-            description = "DNI inválido"
+            description = "DNI invalido"
         )
     })
     public ResponseEntity<ApiResponse<DniResponse>> consultarDniGet(
-            @Parameter(description = "Número de DNI (8 dígitos)", required = true, example = "46027897")
-            @RequestParam(name = "numero") String numero) {
+            @Parameter(description = "Numero de DNI (8 digitos)", required = true, example = "46027897")
+            @RequestParam(name = "numero")
+            @Pattern(regexp = Constants.DNI_PATTERN, message = "El DNI debe contener exactamente 8 digitos")
+            String numero) {
         log.info("Consulta GET de DNI recibida: {}", numero);
-
-        DniRequest request = DniRequest.builder()
-            .numero(numero)
-            .build();
-
-        // Validar manualmente ya que no estamos usando @Valid en parámetro
-        if (numero == null || !numero.matches("^[0-9]{8}$")) {
-            throw new jakarta.validation.ConstraintViolationException(
-                "El DNI debe contener exactamente 8 dígitos",
-                null
-            );
-        }
 
         DniResponse response = dniService.consultarDni(numero);
 
@@ -121,5 +101,3 @@ public class DniController {
         );
     }
 }
-
-

@@ -1,5 +1,6 @@
 package com.acj.acjsignature.mobile.androidws.dto.request;
 
+import com.acj.acjsignature.mobile.androidws.util.MessageConstants;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -12,8 +13,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ForgotPasswordRequest {
-    @NotBlank(message = "El email es requerido")
-    @Email(message = "Formato de email inválido")
+
+    @NotBlank(message = MessageConstants.EMAIL_REQUIRED)
+    @Email(message = MessageConstants.EMAIL_INVALID)
     private String email;
 }
-

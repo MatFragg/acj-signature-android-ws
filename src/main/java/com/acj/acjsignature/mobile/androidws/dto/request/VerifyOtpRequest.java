@@ -1,5 +1,7 @@
 package com.acj.acjsignature.mobile.androidws.dto.request;
 
+import com.acj.acjsignature.mobile.androidws.util.Constants;
+import com.acj.acjsignature.mobile.androidws.util.MessageConstants;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -8,20 +10,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO para solicitud de verificación de OTP.
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class VerifyOtpRequest {
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email should be valid")
+
+    @NotBlank(message = MessageConstants.EMAIL_REQUIRED)
+    @Email(message = MessageConstants.EMAIL_INVALID)
     private String email;
 
-    @NotBlank(message = "OTP is required")
-    @Pattern(regexp = "^\\d{6}$", message = "OTP must be exactly 6 digits")
+    @NotBlank(message = MessageConstants.OTP_REQUIRED)
+    @Pattern(regexp = Constants.OTP_PATTERN, message = MessageConstants.OTP_PATTERN)
     private String otp;
 }
-

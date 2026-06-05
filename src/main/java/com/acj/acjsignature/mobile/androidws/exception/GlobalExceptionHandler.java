@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -196,6 +199,33 @@ public class GlobalExceptionHandler {
             .status(HttpStatus.BAD_REQUEST.value())
             .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
             .message("Cuerpo o parametros de la solicitud invalidos")
+            .timestamp(LocalDateTime.now())
+            .path(extractPath(request))
+            .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolation(
+            ConstraintViolationException ex,
+            WebRequest request) {
+        log.warn("Constraint violation: {}", ex.getMessage());
+
+        Map<String, String> errors = new HashMap<>();
+        for (ConstraintViolation<?> violation : ex.getConstraintViolations()) {
+            String field = violation.getPropertyPath() != null
+                ? violation.getPropertyPath().toString()
+                : "value";
+            errors.put(field, violation.getMessage());
+        }
+
+        ErrorResponse body = ErrorResponse.builder()
+            .code(ErrorCode.VALIDATION_ERROR.getCode())
+            .status(HttpStatus.BAD_REQUEST.value())
+            .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+            .message(ErrorCode.VALIDATION_ERROR.getDefaultMessage())
+            .validationErrors(errors)
             .timestamp(LocalDateTime.now())
             .path(extractPath(request))
             .build();
