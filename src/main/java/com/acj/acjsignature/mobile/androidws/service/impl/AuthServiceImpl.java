@@ -137,10 +137,7 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse verifyOtp(VerifyOtpRequest request) {
         log.info("Attempting to verify OTP for user: {}", request.getEmail());
 
-        otpService.validateOtp(request.getEmail(), request.getOtp());
-
-        User user = userRepository.findByEmail(request.getEmail())
-            .orElseThrow(() -> new BusinessException("Usuario no encontrado"));
+        User user = otpService.validateOtp(request.getEmail(), request.getOtp());
 
         otpService.clearOtp(user);
 
@@ -218,15 +215,12 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ApiResponse<String> resetPassword(ResetPasswordRequest request) {
         log.info("Attempting to reset password for user: {}", request.getEmail());
-        otpService.validateOtp(request.getEmail(), request.getOtp());
-
-        User user = userRepository.findByEmail(request.getEmail())
-            .orElseThrow(() -> new BusinessException("Usuario no encontrado"));
+        User user = otpService.validateOtp(request.getEmail(), request.getOtp());
 
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
 
-        otpService.clearOtp(user);
+        otpService.clearOtpOnly(user);
         log.info("Password reset successfully for user: {}", request.getEmail());
         return ApiResponse.success("Contraseña restablecida exitosamente", null);
     }
@@ -254,7 +248,8 @@ public class AuthServiceImpl implements AuthService {
     public ApiResponse<String> verifyOtpOnly(VerifyOtpRequest request) {
         log.info("Attempting to verify OTP-only for user: {}", request.getEmail());
 
-        otpService.validateOtp(request.getEmail(), request.getOtp());
+        User user = otpService.validateOtp(request.getEmail(), request.getOtp());
+        otpService.clearOtpOnly(user);
 
         log.info("OTP verified (only) for user: {}", request.getEmail());
 

@@ -49,7 +49,7 @@ public class User {
     @Builder.Default
     private Boolean emailVerified = false;
 
-    @Column(name = "otp_code", length = 6)
+    @Column(name = "otp_code", length = 60)
     private String otpCode;
 
     @Column(name = "otp_expiry_time")
