@@ -11,6 +11,9 @@ import com.acj.acjsignature.mobile.androidws.dto.response.ApiResponse;
 import com.acj.acjsignature.mobile.androidws.dto.response.AuthResponse;
 import com.acj.acjsignature.mobile.androidws.dto.response.OtpResponse;
 import com.acj.acjsignature.mobile.androidws.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,17 +29,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Auth", description = "Endpoints de autenticacion y gestion de usuarios")
 public class AuthController {
 
     private final AuthService authService;
 
-    /**
-     * Endpoint para login de usuario.
-     *
-     * @param request Credenciales del usuario (email, password)
-     * @return Token JWT y datos del usuario
-     */
     @PostMapping("/login")
+    @Operation(summary = "Iniciar sesion", description = "Autentica al usuario y devuelve un token JWT")
     public ResponseEntity<ApiResponse<AuthResponse>> login(
             @Valid @RequestBody LoginRequest request) {
         log.info("Login request for user: {}", request.getEmail());
@@ -48,14 +47,8 @@ public class AuthController {
         );
     }
 
-    /**
-     * Endpoint para registro de usuario.
-     * Genera y envía un OTP al email del usuario.
-     *
-     * @param request Datos para registrar nuevo usuario
-     * @return Mensaje indicando que se envió el OTP
-     */
     @PostMapping("/register")
+    @Operation(summary = "Registrar usuario", description = "Crea un nuevo usuario y envia OTP de verificacion")
     public ResponseEntity<ApiResponse<OtpResponse>> register(
             @Valid @RequestBody RegisterRequest request) {
         log.info("Register request for user: {}", request.getEmail());
@@ -66,14 +59,8 @@ public class AuthController {
             .body(ApiResponse.success("Usuario registrado. Verifica tu email para completar el proceso.", response));
     }
 
-    /**
-     * Endpoint para verificar el código OTP.
-     * Una vez verificado, el usuario podrá iniciar sesión.
-     *
-     * @param request Email y código OTP
-     * @return Token JWT y datos del usuario verificado
-     */
     @PostMapping("/verify-otp")
+    @Operation(summary = "Verificar OTP y autenticar", description = "Valida OTP y devuelve token JWT")
     public ResponseEntity<ApiResponse<AuthResponse>> verifyOtp(
             @Valid @RequestBody VerifyOtpRequest request) {
         log.info("OTP verification request for user: {}", request.getEmail());
@@ -85,11 +72,8 @@ public class AuthController {
         );
     }
 
-    /**
-     * Endpoint público para verificar un OTP sin crear sesión ni devolver JWT.
-     * No marca el email como verificado; solo invalida/elimina el OTP para evitar reuso.
-     */
     @PostMapping("/verify-otp-only")
+    @Operation(summary = "Solo verificar OTP", description = "Valida OTP sin generar sesion JWT")
     public ResponseEntity<ApiResponse<String>> verifyOtpOnly(
             @Valid @RequestBody VerifyOtpRequest request) {
         log.info("Verify OTP only request for user: {}", request.getEmail());
@@ -99,14 +83,8 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Endpoint para reenviar codigo OTP.
-     * Util cuando el OTP ha expirado o no fue recibido.
-     *
-     * @param request Email del usuario
-     * @return Mensaje indicando que se reenvio el OTP
-     */
     @PostMapping("/resend-otp")
+    @Operation(summary = "Reenviar OTP", description = "Genera y envia un nuevo OTP al correo")
     public ResponseEntity<ApiResponse<OtpResponse>> resendOtp(
             @Valid @RequestBody ResendOtpRequest request) {
         log.info("Resend OTP request for user: {}", request.getEmail());
@@ -119,6 +97,7 @@ public class AuthController {
     }
 
     @PostMapping("/forgot-password")
+    @Operation(summary = "Olvide contrasena", description = "Envia OTP para restablecer contrasena")
     public ResponseEntity<ApiResponse<OtpResponse>> forgotPassword(
             @Valid @RequestBody ForgotPasswordRequest request) {
         log.info("Forgot password request for user: {}", request.getEmail());
@@ -127,6 +106,7 @@ public class AuthController {
     }
 
     @PostMapping("/reset-password")
+    @Operation(summary = "Restablecer contrasena", description = "Cambia la contrasena verificando el OTP")
     public ResponseEntity<ApiResponse<String>> resetPassword(
             @Valid @RequestBody ResetPasswordRequest request) {
         log.info("Reset password request for user: {}", request.getEmail());
@@ -135,6 +115,8 @@ public class AuthController {
     }
 
     @PostMapping("/change-password")
+    @Operation(summary = "Cambiar contrasena", description = "Cambia la contrasena del usuario autenticado")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<String>> changePassword(
             @Valid @RequestBody ChangePasswordRequest request) {
         log.info("Change password request");
