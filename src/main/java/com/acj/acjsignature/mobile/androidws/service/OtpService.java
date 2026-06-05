@@ -1,31 +1,32 @@
 package com.acj.acjsignature.mobile.androidws.service;
 
+import com.acj.acjsignature.mobile.androidws.dto.response.OtpResponse;
 import com.acj.acjsignature.mobile.androidws.model.User;
 
 /**
  * Servicio de OTP.
- * Proporciona métodos para generar, enviar y validar códigos OTP.
+ * Proporciona metodos para generar, enviar y validar codigos OTP.
  * Los OTPs se almacenan hasheados (BCrypt) en la base de datos.
  */
 public interface OtpService {
 
     /**
-     * Genera un nuevo código OTP, lo hashea, lo persiste y lo envía al email del usuario.
+     * Genera un nuevo codigo OTP, lo hashea, lo persiste y lo envia al email del usuario.
      *
-     * @param user Usuario que recibirá el OTP
+     * @param user Usuario que recibira el OTP
+     * @param message Mensaje a incluir en la respuesta (segun el flujo: registro, resend, etc.)
+     * @return OtpResponse con el tiempo de expiracion en segundos
      */
-    void generateAndSendOtp(User user);
+    OtpResponse generateAndSendOtp(User user, String message);
 
     /**
-     * Valida el código OTP proporcionado contra el hash almacenado.
+     * Valida el codigo OTP proporcionado contra el hash almacenado.
      * Si el OTP no coincide, incrementa el contador de intentos fallidos.
      * Si coincide, retorna la entidad User (sin limpiar el OTP).
      *
      * @param email Email del usuario
-     * @param otp   Código OTP en claro (6 dígitos)
+     * @param otp   Codigo OTP en claro (6 digitos)
      * @return User validada
-     * @throws com.acj.acjsignature.mobile.androidws.exception.BusinessException
-     *         Si el OTP ha expirado, se han excedido los intentos, o el código no coincide
      */
     User validateOtp(String email, String otp);
 
@@ -51,3 +52,4 @@ public interface OtpService {
      */
     long getOtpExpiryTimeRemaining(User user);
 }
+

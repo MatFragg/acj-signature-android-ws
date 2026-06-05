@@ -1,6 +1,7 @@
 package com.acj.acjsignature.mobile.androidws.service.impl;
 
 import com.acj.acjsignature.mobile.androidws.config.AppProperties;
+import com.acj.acjsignature.mobile.androidws.dto.response.OtpResponse;
 import com.acj.acjsignature.mobile.androidws.exception.BusinessException;
 import com.acj.acjsignature.mobile.androidws.exception.ErrorCode;
 import com.acj.acjsignature.mobile.androidws.exception.ResourceNotFoundException;
@@ -36,11 +37,12 @@ public class OtpServiceImpl implements OtpService {
     private final AppProperties appProperties;
 
     @Override
-    public void generateAndSendOtp(User user) {
+    public OtpResponse generateAndSendOtp(User user, String message) {
         String otp = generateNumericOtp(appProperties.getOtp().getLength());
         String otpHash = passwordEncoder.encode(otp);
+        long expirySeconds = appProperties.getOtp().getExpirySeconds();
         LocalDateTime expiryTime = LocalDateTime.now()
-            .plusSeconds(appProperties.getOtp().getExpirySeconds());
+            .plusSeconds(expirySeconds);
 
         user.setOtpCode(otpHash);
         user.setOtpExpiryTime(expiryTime);
@@ -50,6 +52,11 @@ public class OtpServiceImpl implements OtpService {
         log.info("OTP generated for user: {}", user.getEmail());
 
         emailService.sendOtpEmail(user.getEmail(), user.getFullName(), otp);
+
+        return OtpResponse.builder()
+            .message(message)
+            .expiresIn(expirySeconds)
+            .build();
     }
 
     @Override

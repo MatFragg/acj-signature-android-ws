@@ -128,12 +128,8 @@ public class AuthServiceImpl implements AuthService {
         User savedUser = userRepository.save(user);
         log.info("User {} registered successfully with id: {}", request.getEmail(), savedUser.getId());
 
-        otpService.generateAndSendOtp(savedUser);
-
-        return OtpResponse.builder()
-            .message("Se ha enviado un código OTP a tu correo electrónico. Verifica tu email.")
-            .expiresIn(appProperties.getOtp().getExpirySeconds())
-            .build();
+        return otpService.generateAndSendOtp(savedUser, 
+            "Se ha enviado un código OTP a tu correo electrónico. Verifica tu email.");
     }
 
     @Override
@@ -177,7 +173,7 @@ public class AuthServiceImpl implements AuthService {
         log.info("Attempting to resend OTP for user: {}", request.getEmail());
 
         User user = userRepository.findByEmail(request.getEmail())
-            .orElseThrow(() -> new BusinessException("Usuario no encontrado"));
+            .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, "Usuario no encontrado"));
 
         if (user.getEmailVerified()) {
             log.warn("Resend OTP requested for already verified user: {}", request.getEmail());
@@ -185,14 +181,10 @@ public class AuthServiceImpl implements AuthService {
                 "Tu email ya esta verificado. Por favor inicia sesion.");
         }
 
-        otpService.generateAndSendOtp(user);
-
         log.info("OTP resent successfully for user: {}", request.getEmail());
 
-        return OtpResponse.builder()
-            .message("Se ha enviado un nuevo codigo OTP a tu correo electronico. Verifica tu email.")
-            .expiresIn(appProperties.getOtp().getExpirySeconds())
-            .build();
+        return otpService.generateAndSendOtp(user,
+            "Se ha enviado un nuevo codigo OTP a tu correo electronico. Verifica tu email.");
     }
 
     @Override
@@ -204,7 +196,7 @@ public class AuthServiceImpl implements AuthService {
         // y enviar OTP solo si el usuario esta registrado.
         userRepository.findByEmail(email).ifPresent(user -> {
             if (user.getActive() && user.getEmailVerified()) {
-                otpService.generateAndSendOtp(user);
+                otpService.generateAndSendOtp(user, null); // Message handled in response
             } else {
                 log.info("Forgot password requested for inactive or unverified user: {}", email);
             }
@@ -248,13 +240,6 @@ public class AuthServiceImpl implements AuthService {
 
         log.info("Password changed successfully for user: {}", email);
         return ApiResponse.success("Contrasena cambiada exitosamente", null);
-    }
-
-        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-        userRepository.save(user);
-
-        log.info("Password changed successfully for user: {}", email);
-        return ApiResponse.success("Contraseña cambiada exitosamente", null);
     }
 
     @Override
