@@ -4,6 +4,7 @@ import com.acj.acjsignature.mobile.androidws.dto.response.DniResponse;
 import com.acj.acjsignature.mobile.androidws.exception.BusinessException;
 import com.acj.acjsignature.mobile.androidws.exception.ErrorCode;
 import com.acj.acjsignature.mobile.androidws.service.DniService;
+import com.acj.acjsignature.mobile.androidws.util.MessageConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
