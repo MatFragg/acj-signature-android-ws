@@ -43,6 +43,26 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Maneja excepciones de credenciales invalidas o acceso no autorizado.
+     */
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthorizedException(
+            UnauthorizedException ex,
+            WebRequest request) {
+        log.warn("Unauthorized: {}", ex.getMessage());
+
+        ErrorResponse error = ErrorResponse.builder()
+            .status(HttpStatus.UNAUTHORIZED.value())
+            .message(ex.getMessage())
+            .error("Unauthorized")
+            .timestamp(LocalDateTime.now())
+            .path(request.getDescription(false).replace("uri=", ""))
+            .build();
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
+
+    /**
      * Maneja excepciones de usuario no encontrado.
      */
     @ExceptionHandler(UsernameNotFoundException.class)
@@ -53,7 +73,7 @@ public class GlobalExceptionHandler {
 
         ErrorResponse error = ErrorResponse.builder()
             .status(HttpStatus.UNAUTHORIZED.value())
-            .message(ex.getMessage())
+            .message("Credenciales invalidas")
             .error("Unauthorized")
             .timestamp(LocalDateTime.now())
             .path(request.getDescription(false).replace("uri=", ""))
@@ -110,4 +130,5 @@ public class GlobalExceptionHandler {
             .body(error);
     }
 }
+
 
