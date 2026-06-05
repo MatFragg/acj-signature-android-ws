@@ -10,15 +10,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collections;
 
 /**
- * Inicializador de datos para la base de datos.
- * Crea los roles por defecto y un usuario administrador de prueba si no existen.
+ * Inicializador de datos para el perfil DEV.
+ * Crea los roles por defecto y dos cuentas de prueba (admin/user) si no existen.
+ * SOLO se activa con el perfil "dev" para evitar cuentas de backdoor en produccion.
  */
 @Configuration
+@Profile("dev")
 @RequiredArgsConstructor
 @Slf4j
 public class DataInitializer {
@@ -26,19 +29,18 @@ public class DataInitializer {
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AppProperties appProperties;
 
     @Bean
     public CommandLineRunner initializeData() {
         return args -> {
-            log.info("Initializing database with default roles and users...");
+            log.warn("[DEV ONLY] Inicializando base de datos con roles y cuentas de prueba...");
 
-            // Crear roles si no existen
             initializeRoles();
-
-            // Crear usuario admin de prueba si no existe
             initializeTestUsers();
 
-            log.info("Database initialization completed");
+            log.warn("[DEV ONLY] Inicializacion de datos de desarrollo completa. " +
+                "NO usar este perfil en produccion.");
         };
     }
 
@@ -50,49 +52,52 @@ public class DataInitializer {
                     .description(roleEnum.getDescripcion())
                     .build();
                 roleRepository.save(role);
-                log.info("Created role: {}", roleEnum);
+                log.info("[DEV] Created role: {}", roleEnum);
             }
         }
     }
 
     private void initializeTestUsers() {
-        // Crear usuario admin de prueba
-        if (!userRepository.existsByEmail("admin@test.com")) {
+        AppProperties.Bootstrap bootstrap = appProperties.getBootstrap();
+
+        if (!userRepository.existsByEmail(bootstrap.getAdminEmail())) {
             Role adminRole = roleRepository.findByName(RoleEnum.ROLE_ADMIN)
-                .orElseThrow(() -> new RuntimeException("Admin role not found"));
+                .orElseThrow(() -> new IllegalStateException("Admin role not found"));
 
             User adminUser = User.builder()
-                .email("admin@test.com")
-                .password(passwordEncoder.encode("Admin123"))
+                .email(bootstrap.getAdminEmail())
+                .password(passwordEncoder.encode(bootstrap.getAdminPassword()))
                 .dni("12345678")
                 .firstName("Admin")
                 .lastName("User")
                 .active(true)
+                .emailVerified(true)
                 .roles(Collections.singleton(adminRole))
                 .build();
 
             userRepository.save(adminUser);
-            log.info("Created test admin user: admin@test.com");
+            log.warn("[DEV] Created test admin user: {} (cambia la contrasena al primer login)",
+                bootstrap.getAdminEmail());
         }
 
-        // Crear usuario estándar de prueba
-        if (!userRepository.existsByEmail("user@test.com")) {
+        if (!userRepository.existsByEmail(bootstrap.getUserEmail())) {
             Role userRole = roleRepository.findByName(RoleEnum.ROLE_USER)
-                .orElseThrow(() -> new RuntimeException("User role not found"));
+                .orElseThrow(() -> new IllegalStateException("User role not found"));
 
             User testUser = User.builder()
-                .email("user@test.com")
-                .password(passwordEncoder.encode("User123"))
+                .email(bootstrap.getUserEmail())
+                .password(passwordEncoder.encode(bootstrap.getUserPassword()))
                 .dni("87654321")
                 .firstName("Test")
                 .lastName("User")
                 .active(true)
+                .emailVerified(true)
                 .roles(Collections.singleton(userRole))
                 .build();
 
             userRepository.save(testUser);
-            log.info("Created test user: user@test.com");
+            log.warn("[DEV] Created test user: {} (cambia la contrasena al primer login)",
+                bootstrap.getUserEmail());
         }
     }
 }
-
