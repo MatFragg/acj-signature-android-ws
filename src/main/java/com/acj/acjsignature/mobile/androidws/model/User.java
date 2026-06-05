@@ -3,6 +3,12 @@ package com.acj.acjsignature.mobile.androidws.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,6 +27,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EntityListeners(AuditingEntityListener.class)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,11 +66,21 @@ public class User {
     @Builder.Default
     private Integer otpFailedAttempts = 0;
 
+    @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @CreatedBy
+    @Column(name = "created_by", length = 100, updatable = false)
+    private String createdBy;
+
+    @LastModifiedBy
+    @Column(name = "updated_by", length = 100)
+    private String updatedBy;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinTable(
@@ -73,17 +90,6 @@ public class User {
     )
     @Builder.Default
     private Set<Role> roles = new HashSet<>();
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
 
     /**
      * Obtiene el nombre completo del usuario.

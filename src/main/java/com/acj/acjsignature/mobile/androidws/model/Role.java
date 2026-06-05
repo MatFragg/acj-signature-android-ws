@@ -2,6 +2,13 @@ package com.acj.acjsignature.mobile.androidws.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
 
 /**
  * Entidad Role (Rol).
@@ -14,6 +21,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EntityListeners(AuditingEntityListener.class)
 public class Role {
 
     @Id
@@ -27,21 +35,20 @@ public class Role {
     @Column(length = 255)
     private String description;
 
+    @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
-    private java.time.LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
+    @LastModifiedDate
     @Column(name = "updated_at")
-    private java.time.LocalDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = java.time.LocalDateTime.now();
-        updatedAt = java.time.LocalDateTime.now();
-    }
+    @CreatedBy
+    @Column(name = "created_by", length = 100, updatable = false)
+    private String createdBy;
 
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = java.time.LocalDateTime.now();
-    }
+    @LastModifiedBy
+    @Column(name = "updated_by", length = 100)
+    private String updatedBy;
 }
 
