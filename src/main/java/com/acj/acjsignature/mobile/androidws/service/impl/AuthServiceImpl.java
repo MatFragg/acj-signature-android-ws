@@ -12,6 +12,8 @@ import com.acj.acjsignature.mobile.androidws.dto.response.AuthResponse;
 import com.acj.acjsignature.mobile.androidws.dto.response.OtpResponse;
 import com.acj.acjsignature.mobile.androidws.dto.response.ApiResponse;
 import com.acj.acjsignature.mobile.androidws.exception.BusinessException;
+import com.acj.acjsignature.mobile.androidws.exception.ErrorCode;
+import com.acj.acjsignature.mobile.androidws.exception.ResourceNotFoundException;
 import com.acj.acjsignature.mobile.androidws.exception.UnauthorizedException;
 import com.acj.acjsignature.mobile.androidws.mapper.UserMapper;
 import com.acj.acjsignature.mobile.androidws.model.Role;
@@ -97,18 +99,19 @@ public class AuthServiceImpl implements AuthService {
 
         if (userRepository.existsByEmail(request.getEmail())) {
             log.warn("Email already exists: {}", request.getEmail());
-            throw new BusinessException("Email ya está registrado");
+            throw new BusinessException(ErrorCode.USER_ALREADY_EXISTS, "El email ya esta registrado");
         }
 
         if (userRepository.existsByDni(request.getDni())) {
             log.warn("DNI already exists: {}", request.getDni());
-            throw new BusinessException("DNI ya está registrado");
+            throw new BusinessException(ErrorCode.DNI_ALREADY_EXISTS, "El DNI ya esta registrado");
         }
 
         Role userRole = roleRepository.findByName(RoleEnum.ROLE_USER)
             .orElseThrow(() -> {
                 log.error("Role ROLE_USER not found in database");
-                return new BusinessException("Rol por defecto no encontrado");
+                return new BusinessException(ErrorCode.ROLE_NOT_FOUND,
+                    "Rol ROLE_USER no encontrado en la base de datos");
             });
 
         User user = User.builder()
@@ -178,7 +181,8 @@ public class AuthServiceImpl implements AuthService {
 
         if (user.getEmailVerified()) {
             log.warn("Resend OTP requested for already verified user: {}", request.getEmail());
-            throw new BusinessException("Tu email ya esta verificado. Por favor inicia sesion.");
+            throw new BusinessException(ErrorCode.EMAIL_ALREADY_VERIFIED,
+                "Tu email ya esta verificado. Por favor inicia sesion.");
         }
 
         otpService.generateAndSendOtp(user);
@@ -231,11 +235,20 @@ public class AuthServiceImpl implements AuthService {
         log.info("Attempting to change password for user: {}", email);
 
         User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new UnauthorizedException("Usuario no autenticado o no encontrado"));
+            .orElseThrow(() -> new UnauthorizedException(ErrorCode.USER_NOT_FOUND,
+                "Usuario no autenticado o no encontrado"));
 
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
-            throw new UnauthorizedException("Credenciales invalidas");
+            throw new UnauthorizedException(ErrorCode.CURRENT_PASSWORD_INVALID,
+                ErrorCode.CURRENT_PASSWORD_INVALID.getDefaultMessage());
         }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+
+        log.info("Password changed successfully for user: {}", email);
+        return ApiResponse.success("Contrasena cambiada exitosamente", null);
+    }
 
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);

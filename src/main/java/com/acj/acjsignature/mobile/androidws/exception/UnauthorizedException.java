@@ -1,16 +1,19 @@
 package com.acj.acjsignature.mobile.androidws.exception;
 
 /**
- * Excepcion para credenciales invalidas o acceso no autorizado.
- * Mapea a HTTP 401 Unauthorized.
+ * Credenciales invalidas o acceso no autorizado. Mapea a HTTP 401.
  */
-public class UnauthorizedException extends RuntimeException {
+public class UnauthorizedException extends BusinessException {
 
     public UnauthorizedException(String message) {
-        super(message);
+        super(ErrorCode.AUTH_INVALID_CREDENTIALS, message);
     }
 
-    public UnauthorizedException(String message, Throwable cause) {
-        super(message, cause);
+    public UnauthorizedException(ErrorCode errorCode) {
+        super(errorCode);
+    }
+
+    public UnauthorizedException(ErrorCode errorCode, String message) {
+        super(errorCode, message);
     }
 }

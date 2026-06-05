@@ -1,17 +1,28 @@
 package com.acj.acjsignature.mobile.androidws.exception;
 
+import lombok.Getter;
+
 /**
- * Excepción para errores de negocio.
- * Se lanza cuando ocurre una violación de una regla de negocio.
+ * Excepcion base para errores de negocio.
+ * Cada excepcion tiene un ErrorCode que define el status HTTP y el mensaje por defecto.
  */
+@Getter
 public class BusinessException extends RuntimeException {
 
-    public BusinessException(String message) {
-        super(message);
+    private final ErrorCode errorCode;
+
+    public BusinessException(ErrorCode errorCode) {
+        super(errorCode.getDefaultMessage());
+        this.errorCode = errorCode;
     }
 
-    public BusinessException(String message, Throwable cause) {
+    public BusinessException(ErrorCode errorCode, String message) {
+        super(message);
+        this.errorCode = errorCode;
+    }
+
+    public BusinessException(ErrorCode errorCode, String message, Throwable cause) {
         super(message, cause);
+        this.errorCode = errorCode;
     }
 }
-

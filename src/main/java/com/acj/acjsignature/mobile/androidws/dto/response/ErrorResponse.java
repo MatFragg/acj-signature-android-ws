@@ -11,6 +11,8 @@ import java.util.Map;
 
 /**
  * DTO para respuesta de error estandarizada.
+ * Devuelve un codigo de error legible por maquina (ErrorCode.code),
+ * un mensaje legible por humanos, status HTTP, path y errores de validacion.
  */
 @Data
 @NoArgsConstructor
@@ -19,17 +21,17 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorResponse {
 
-    private int status;
+    private String code;
 
-    private String message;
+    private int status;
 
     private String error;
 
-    private LocalDateTime timestamp;
+    private String message;
 
-    @Builder.Default
-    private String path = null;
+    private String path;
+
+    private LocalDateTime timestamp;
 
     private Map<String, String> validationErrors;
 }
-

@@ -2,6 +2,8 @@ package com.acj.acjsignature.mobile.androidws.service.impl;
 
 import com.acj.acjsignature.mobile.androidws.config.AppProperties;
 import com.acj.acjsignature.mobile.androidws.exception.BusinessException;
+import com.acj.acjsignature.mobile.androidws.exception.ErrorCode;
+import com.acj.acjsignature.mobile.androidws.exception.ResourceNotFoundException;
 import com.acj.acjsignature.mobile.androidws.model.User;
 import com.acj.acjsignature.mobile.androidws.repository.UserRepository;
 import com.acj.acjsignature.mobile.androidws.service.EmailService;
@@ -53,18 +55,21 @@ public class OtpServiceImpl implements OtpService {
     @Override
     public User validateOtp(String email, String otp) {
         User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new BusinessException("Usuario no encontrado"));
+            .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.USER_NOT_FOUND,
+                "Usuario no encontrado"));
 
         if (isOtpExpired(user)) {
             log.warn("OTP expired for user: {}", email);
-            throw new BusinessException("El código OTP ha expirado. Solicita uno nuevo.");
+            throw new BusinessException(ErrorCode.OTP_EXPIRED,
+                ErrorCode.OTP_EXPIRED.getDefaultMessage());
         }
 
         int maxAttempts = appProperties.getOtp().getMaxFailedAttempts();
         if (user.getOtpFailedAttempts() != null
             && user.getOtpFailedAttempts() >= maxAttempts) {
             log.warn("Max OTP failed attempts exceeded for user: {}", email);
-            throw new BusinessException("Demasiados intentos fallidos. Solicita un nuevo código OTP.");
+            throw new BusinessException(ErrorCode.OTP_MAX_ATTEMPTS,
+                ErrorCode.OTP_MAX_ATTEMPTS.getDefaultMessage());
         }
 
         String storedHash = user.getOtpCode();
@@ -73,7 +78,8 @@ public class OtpServiceImpl implements OtpService {
             user.setOtpFailedAttempts(attempts);
             userRepository.save(user);
             log.warn("Invalid OTP for user: {}. Attempts: {}", email, attempts);
-            throw new BusinessException("Código OTP incorrecto. Intenta nuevamente.");
+            throw new BusinessException(ErrorCode.OTP_INVALID,
+                ErrorCode.OTP_INVALID.getDefaultMessage());
         }
 
         log.info("OTP validated successfully for user: {}", email);

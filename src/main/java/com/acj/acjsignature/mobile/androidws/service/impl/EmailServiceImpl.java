@@ -1,6 +1,7 @@
 package com.acj.acjsignature.mobile.androidws.service.impl;
 
 import com.acj.acjsignature.mobile.androidws.exception.BusinessException;
+import com.acj.acjsignature.mobile.androidws.exception.ErrorCode;
 import com.acj.acjsignature.mobile.androidws.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -82,7 +83,8 @@ public class EmailServiceImpl implements EmailService {
             log.info("OTP email sent successfully to: {}", email);
         } catch (Exception ex) {
             log.error("Error sending OTP email to {}: {}", email, ex.getMessage());
-            throw new BusinessException("Error al enviar el código OTP por correo");
+            throw new BusinessException(ErrorCode.OTP_EMAIL_SEND_FAILED,
+                ErrorCode.OTP_EMAIL_SEND_FAILED.getDefaultMessage());
         }
     }
 
