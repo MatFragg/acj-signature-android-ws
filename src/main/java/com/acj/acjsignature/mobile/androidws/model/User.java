@@ -66,6 +66,10 @@ public class User {
     @Builder.Default
     private Integer otpFailedAttempts = 0;
 
+    @Column(name = "otp_verified", nullable = false)
+    @Builder.Default
+    private Boolean otpVerified = false;
+
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

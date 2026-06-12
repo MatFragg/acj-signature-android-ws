@@ -50,6 +50,7 @@ public interface OtpService {
     /**
      * Obtiene el tiempo restante en segundos para que expire el OTP.
      */
+    void markOtpVerified(User user);
     long getOtpExpiryTimeRemaining(User user);
 }
 

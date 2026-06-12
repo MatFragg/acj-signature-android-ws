@@ -31,7 +31,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Component
 @Order(1)
-@RequiredArgsConstructor
 @Slf4j
 public class RateLimitFilter extends OncePerRequestFilter {
 
@@ -45,6 +44,11 @@ public class RateLimitFilter extends OncePerRequestFilter {
     private final Map<String, Bucket> registerBuckets = new ConcurrentHashMap<>();
     private final Map<String, Bucket> otpVerifyBuckets = new ConcurrentHashMap<>();
     private final Map<String, Bucket> forgotBuckets = new ConcurrentHashMap<>();
+
+    public RateLimitFilter(AppProperties appProperties, ObjectMapper objectMapper) {
+        this.appProperties = appProperties;
+        this.objectMapper = objectMapper;
+    }
 
     @Override
     protected void doFilterInternal(

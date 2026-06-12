@@ -1,247 +1,216 @@
-<!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="color-scheme" content="light" />
-    <meta name="supported-color-schemes" content="light" />
-    <title>Código de verificación</title>
+<body style="margin:0;padding:0;background:#F5F9FA;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+    <tr>
+        <td align="center" style="padding:40px 16px;">
 
-    <!--[if mso]>
-    <noscript><xml><o:OfficeDocumentSettings>
-        <o:PixelsPerInch>96</o:PixelsPerInch>
-    </o:OfficeDocumentSettings></xml></noscript>
-    <![endif]-->
+            <table
+                    role="presentation"
+                    width="100%"
+                    style="
+                    max-width:600px;
+                    border-radius:24px;
+                    overflow:hidden;
+                    background:#1E2D4E;
+                    "
+            >
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Syne:wght@700&family=JetBrains+Mono:wght@600&display=swap');
+                <!-- HERO -->
+                <tr>
+                    <td
+                            align="center"
+                            style="
+                            background:linear-gradient(
+                                135deg,
+                                #1E2D4E 0%,
+                                #253660 100%
+                            );
+                            padding:48px 32px;
+                            "
+                    >
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+                        <div
+                                style="
+                                font-family:Poppins,sans-serif;
+                                font-weight:600;
+                                font-size:28px;
+                                color:white;
+                                margin-bottom:36px;
+                                "
+                        >
+                            ACJ Signature
+                        </div>
 
-        body {
-            background-color: #ffffff;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            color: #1E2D4E;
-            -webkit-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
-        }
+                        <div
+                                style="
+                                font-family:Poppins,sans-serif;
+                                font-size:32px;
+                                font-weight:600;
+                                color:white;
+                                margin-bottom:12px;
+                                "
+                        >
+                            Hola, <span th:text="${nombre}">Raúl</span>
+                        </div>
 
-        .wrapper {
-            background: #ffffff;
-            padding: 48px 20px 56px;
-        }
+                        <div
+                                style="
+                                font-family:Poppins,sans-serif;
+                                font-size:16px;
+                                color:#CFEFF4;
+                                margin-bottom:28px;
+                                "
+                        >
+                            Tu código de verificación es:
+                        </div>
 
-        .container {
-            max-width: 520px;
-            margin: 0 auto;
-        }
+                        <div
+                                style="
+                                font-family:monospace;
+                                font-size:56px;
+                                font-weight:700;
+                                letter-spacing:8px;
+                                color:#FFFFFF;
+                                margin-bottom:28px;
+                                "
+                                th:text="${codigo}"
+                        >
+                            218731
+                        </div>
 
-        .topbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-bottom: 36px;
-            border-bottom: 1px solid #E2F1F4;
-            margin-bottom: 44px;
-        }
+                        <div
+                                style="
+                                font-family:Poppins,sans-serif;
+                                color:#CFEFF4;
+                                font-size:15px;
+                                line-height:1.7;
+                                "
+                        >
+                            Ingresa este código para confirmar tu identidad
+                            y continuar con el acceso a tu cuenta.
+                        </div>
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-        }
+                    </td>
+                </tr>
 
-        .logo-text {
-            font-family: 'Syne', sans-serif;
-            font-size: 17px;
-            font-weight: 700;
-            color: #1E2D4E;
-            letter-spacing: -0.2px;
-        }
+                <!-- STRIP -->
+                <tr>
+                    <td
+                            style="
+                            height:8px;
+                            background:linear-gradient(
+                                90deg,
+                                #1A8FA0,
+                                #4DC8D8
+                            );
+                            "
+                    ></td>
+                </tr>
 
-        .topbar-tag {
-            font-size: 11px;
-            font-weight: 500;
-            color: #1A8FA0;
-            letter-spacing: 0.6px;
-            text-transform: uppercase;
-        }
+                <!-- CONTENT -->
+                <tr>
+                    <td
+                            style="
+                            background:white;
+                            padding:36px 32px;
+                            "
+                    >
 
-        .intro-line {
-            font-size: 13px;
-            color: #5B8898;
-            margin-bottom: 8px;
-            font-weight: 400;
-        }
+                        <table
+                                role="presentation"
+                                width="100%"
+                                style="
+                                background:#EAF5F7;
+                                border:1px solid rgba(77,200,216,.25);
+                                border-radius:18px;
+                                "
+                        >
+                            <tr>
+                                <td style="padding:24px">
 
-        .headline {
-            font-family: 'Syne', sans-serif;
-            font-size: 26px;
-            font-weight: 700;
-            color: #1E2D4E;
-            line-height: 1.2;
-            letter-spacing: -0.5px;
-            margin-bottom: 20px;
-        }
+                                    <div
+                                            style="
+                                            font-family:Manrope,sans-serif;
+                                            font-size:12px;
+                                            font-weight:700;
+                                            color:#1A8FA0;
+                                            text-transform:uppercase;
+                                            letter-spacing:1px;
+                                            margin-bottom:10px;
+                                            "
+                                    >
+                                        Seguridad
+                                    </div>
 
-        .body-copy {
-            font-size: 14px;
-            color: #2E5068;
-            line-height: 1.75;
-            margin-bottom: 40px;
-            max-width: 400px;
-        }
+                                    <div
+                                            style="
+                                            font-family:Poppins,sans-serif;
+                                            color:#2E5068;
+                                            font-size:14px;
+                                            line-height:1.8;
+                                            "
+                                    >
+                                        Este código expirará en
+                                        <strong
+                                                style="color:#1E2D4E"
+                                                th:text="${minutos}"
+                                        >5</strong>
+                                        minutos y solo puede utilizarse una vez.
+                                    </div>
 
-        .otp-section {
-            border-top: 1px solid #E2F1F4;
-            padding-top: 32px;
-            margin-bottom: 32px;
-        }
+                                </td>
+                            </tr>
+                        </table>
 
-        .otp-eyebrow {
-            font-size: 11px;
-            color: #1A8FA0;
-            letter-spacing: 1.2px;
-            text-transform: uppercase;
-            font-weight: 500;
-            margin-bottom: 16px;
-        }
+                        <div
+                                style="
+                                margin-top:28px;
+                                font-family:Poppins,sans-serif;
+                                font-size:14px;
+                                color:#5B8898;
+                                line-height:1.8;
+                                "
+                        >
+                            Si no solicitaste este código,
+                            puedes ignorar este mensaje.
+                            Tu cuenta permanecerá protegida.
+                        </div>
 
-        .otp-row {
-            display: flex;
-            align-items: baseline;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
+                    </td>
+                </tr>
 
-        .otp-number {
-            font-family: 'JetBrains Mono', 'Courier New', monospace;
-            font-size: 52px;
-            font-weight: 600;
-            color: #1E2D4E;
-            letter-spacing: 6px;
-            line-height: 1;
-        }
+                <!-- FOOTER -->
+                <tr>
+                    <td
+                            style="
+                            background:#F5F9FA;
+                            padding:24px;
+                            text-align:center;
+                            "
+                    >
 
-        .otp-meta {
-            font-size: 12px;
-            color: #5B8898;
-            line-height: 1.6;
-        }
+                        <div
+                                style="
+                                font-family:Poppins,sans-serif;
+                                font-size:12px;
+                                color:#5B8898;
+                                line-height:1.8;
+                                "
+                        >
+                            © <span th:text="${anio}">2026</span>
+                            ACJ Signature
+                            <br>
+                            Enviado a
+                            <span th:text="${email}">
+                                usuario@email.com
+                            </span>
+                        </div>
 
-        .otp-meta strong {
-            color: #1A8FA0;
-            font-weight: 500;
-        }
+                    </td>
+                </tr>
 
-        .cut-line {
-            border: none;
-            border-top: 1px dashed #C8E8ED;
-            margin: 32px 0;
-        }
+            </table>
 
-        .security-note {
-            font-size: 13px;
-            color: #5B8898;
-            line-height: 1.65;
-        }
-
-        .security-note a {
-            color: #1A8FA0;
-            text-decoration: none;
-            border-bottom: 1px solid rgba(26,143,160,0.3);
-        }
-
-        .footer {
-            border-top: 1px solid #E2F1F4;
-            margin-top: 48px;
-            padding-top: 24px;
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .footer-copy {
-            font-size: 11px;
-            color: #5B8898;
-            line-height: 1.7;
-        }
-
-        .footer-links {
-            display: flex;
-            gap: 16px;
-        }
-
-        .footer-link {
-            font-size: 11px;
-            color: #5B8898;
-            text-decoration: none;
-            border-bottom: 1px solid transparent;
-        }
-
-        .footer-link:hover {
-            border-color: #5B8898;
-        }
-
-        @media only screen and (max-width: 480px) {
-            .wrapper { padding: 32px 16px 40px; }
-            .otp-number { font-size: 40px; letter-spacing: 4px; }
-            .headline { font-size: 22px; }
-            .footer { flex-direction: column; }
-        }
-    </style>
-</head>
-<body>
-<div class="wrapper">
-    <div class="container">
-
-        <!-- Topbar -->
-        <div class="topbar">
-            <span class="logo-text" th:text="${brand_name}">Tu Empresa</span>
-        </div>
-
-        <!-- Saludo -->
-        <p class="intro-line">Hola, <span th:text="${nombre}">usuario</span></p>
-
-        <!-- Código como protagonista -->
-        <span class="otp-number" th:text="${codigo}">000000</span>
-        <p class="otp-meta">
-            Válido por <strong><span th:text="${minutos}">1</span> min</strong> · Uso único
-        </p>
-
-        <!-- Copy secundario -->
-        <p class="body-copy">
-            Úsalo para iniciar sesión en ACJ Signature.
-            Si no lo solicitaste, puedes ignorar este mensaje — tu cuenta no se ve afectada.
-        </p>
-
-        <hr class="cut-line" />
-
-        <!-- Nota de seguridad -->
-        <p class="security-note">
-            ¿Tienes dudas o crees que alguien más intentó acceder?
-            <a th:href="${url_ayuda}">Escríbenos</a> y te ayudamos.
-        </p>
-
-        <!-- Footer -->
-        <div class="footer">
-            <p class="footer-copy">
-                © <span th:text="${anio}">2026</span>
-                <span th:text="${brand_name}">ACJ Signature</span><br>
-                Enviado a <span th:text="${email}">correo@ejemplo.com</span>
-            </p>
-            <div class="footer-links">
-                <a th:href="${url_privacidad}" class="footer-link">Privacidad</a>
-                <a th:href="${url_terminos}" class="footer-link">Términos</a>
-            </div>
-        </div>
-
-    </div>
-</div>
+        </td>
+    </tr>
+</table>
 </body>
-</html>
-

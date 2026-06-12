@@ -102,11 +102,19 @@ public class OtpServiceImpl implements OtpService {
     }
 
     @Override
+    public void markOtpVerified(User user) {
+        user.setOtpVerified(true);
+        userRepository.save(user);
+        log.info("OTP marked as verified for user: {}", user.getEmail());
+    }
+
+    @Override
     public void clearOtp(User user) {
         user.setOtpCode(null);
         user.setOtpExpiryTime(null);
         user.setOtpFailedAttempts(0);
         user.setEmailVerified(true);
+        user.setOtpVerified(false); // Reset otpVerified flag
         userRepository.save(user);
         log.info("OTP cleared for user and email marked verified: {}", user.getEmail());
     }
@@ -116,6 +124,7 @@ public class OtpServiceImpl implements OtpService {
         user.setOtpCode(null);
         user.setOtpExpiryTime(null);
         user.setOtpFailedAttempts(0);
+        user.setOtpVerified(false); // Reset otpVerified flag
         userRepository.save(user);
         log.info("OTP cleared for user without changing emailVerified: {}", user.getEmail());
     }

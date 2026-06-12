@@ -248,7 +248,7 @@ public class AuthServiceImpl implements AuthService {
         log.info("Attempting to verify OTP-only for user: {}", request.getEmail());
 
         User user = otpService.validateOtp(request.getEmail(), request.getOtp());
-        otpService.clearOtpOnly(user);
+        otpService.markOtpVerified(user);
 
         log.info("OTP verified (only) for user: {}", request.getEmail());
 
