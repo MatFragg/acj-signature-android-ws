@@ -11,6 +11,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collections;
@@ -32,29 +33,16 @@ public class DataInitializer {
     private final AppProperties appProperties;
 
     @Bean
+    @Order(2)
     public CommandLineRunner initializeData() {
         return args -> {
-            log.warn("[DEV ONLY] Inicializando base de datos con roles y cuentas de prueba...");
+            log.warn("[DEV ONLY] Inicializando base de datos con cuentas de prueba...");
 
-            initializeRoles();
             initializeTestUsers();
 
             log.warn("[DEV ONLY] Inicializacion de datos de desarrollo completa. " +
                 "NO usar este perfil en produccion.");
         };
-    }
-
-    private void initializeRoles() {
-        for (RoleEnum roleEnum : RoleEnum.values()) {
-            if (!roleRepository.existsByName(roleEnum)) {
-                Role role = Role.builder()
-                    .name(roleEnum)
-                    .description(roleEnum.getDescripcion())
-                    .build();
-                roleRepository.save(role);
-                log.info("[DEV] Created role: {}", roleEnum);
-            }
-        }
     }
 
     private void initializeTestUsers() {
