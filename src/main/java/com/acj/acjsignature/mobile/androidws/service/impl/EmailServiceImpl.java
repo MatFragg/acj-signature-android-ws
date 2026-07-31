@@ -82,9 +82,9 @@ public class EmailServiceImpl implements EmailService {
             mailSender.send(message);
             log.info("OTP email sent successfully to: {}", email);
         } catch (Exception ex) {
-            log.error("Error sending OTP email to {}: {}", email, ex.getMessage());
+            log.error("Error sending OTP email to {}: {}", email, ex.getMessage(), ex);
             throw new BusinessException(ErrorCode.OTP_EMAIL_SEND_FAILED,
-                ErrorCode.OTP_EMAIL_SEND_FAILED.getDefaultMessage());
+                ErrorCode.OTP_EMAIL_SEND_FAILED.getDefaultMessage(), ex);
         }
     }
 
